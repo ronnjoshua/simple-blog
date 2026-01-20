@@ -17,7 +17,6 @@ export default function Register() {
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      // Email confirmation is disabled in Supabase settings, so this should create a session immediately.
     });
 
     setBusy(false);
@@ -27,17 +26,52 @@ export default function Register() {
   };
 
   return (
-    <div style={{ padding: 16, maxWidth: 420 }}>
-      <h2>Register</h2>
-      <form onSubmit={onSubmit} style={{ display: "grid", gap: 12 }}>
-        <input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <input placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        <button disabled={busy} type="submit">{busy ? "Creating..." : "Create account"}</button>
-        {err && <div style={{ color: "crimson" }}>{err}</div>}
-      </form>
-      <p style={{ marginTop: 12 }}>
-        Already have an account? <Link to="/login">Login</Link>
-      </p>
+    <div className="page">
+      <div className="container container-sm">
+        <div className="card" style={{ maxWidth: '480px', margin: '0 auto' }}>
+          <h2>✨ Create Account</h2>
+          <p className="text-secondary" style={{ marginBottom: '1.5rem' }}>
+            Join our community and start sharing your thoughts
+          </p>
+
+          <form onSubmit={onSubmit} className="form">
+            <div className="form-group">
+              <label className="form-label">Email</label>
+              <input 
+                type="email"
+                placeholder="your@email.com" 
+                value={email} 
+                onChange={(e) => setEmail(e.target.value)}
+                autoFocus
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Password</label>
+              <input 
+                type="password"
+                placeholder="Create a strong password" 
+                value={password} 
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={6}
+              />
+              <small className="text-muted">Minimum 6 characters</small>
+            </div>
+
+            <button disabled={busy} type="submit" style={{ width: '100%' }}>
+              {busy ? "Creating account..." : "🚀 Create Account"}
+            </button>
+
+            {err && <div className="alert alert-error">{err}</div>}
+          </form>
+
+          <p style={{ marginTop: '1.5rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
+            Already have an account? <Link to="/login">Sign in</Link>
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

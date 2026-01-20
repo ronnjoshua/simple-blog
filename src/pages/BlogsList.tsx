@@ -47,38 +47,65 @@ export default function BlogsList() {
   }, [page]);
 
   return (
-    <div style={{ padding: 16 }}>
-      <h2>Blogs</h2>
+    <div className="page">
+      <div className="container container-md">
+        <h1>✍️ Blog Posts</h1>
 
-      {!user && (
-        <div style={{ marginBottom: 12, padding: 12, border: "1px solid #ddd" }}>
-          You’re browsing as guest. <Link to="/login">Login</Link> to create/edit.
-        </div>
-      )}
-
-      {busy && <div>Loading...</div>}
-      {err && <div style={{ color: "crimson" }}>{err}</div>}
-
-      <div style={{ display: "grid", gap: 12 }}>
-        {items.map((b) => (
-          <div key={b.id} style={{ padding: 12, border: "1px solid #ddd" }}>
-            <Link to={`/blogs/${b.id}`} style={{ fontSize: 18, fontWeight: 600 }}>
-              {b.title}
-            </Link>
-            <div style={{ opacity: 0.7, marginTop: 6 }}>
-              {new Date(b.created_at).toLocaleString()}
-            </div>
-            <div style={{ marginTop: 8, opacity: 0.9 }}>
-              {b.content.length > 160 ? b.content.slice(0, 160) + "…" : b.content}
-            </div>
+        {!user && (
+          <div className="alert alert-info">
+            You're browsing as a guest. <Link to="/login">Login</Link> to create and edit posts.
           </div>
-        ))}
-      </div>
+        )}
 
-      <div style={{ marginTop: 16, display: "flex", gap: 8, alignItems: "center" }}>
-        <button disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>Prev</button>
-        <span>Page {page} / {totalPages}</span>
-        <button disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>Next</button>
+        {busy && <div className="loading">Loading posts...</div>}
+        {err && <div className="alert alert-error">{err}</div>}
+
+        <div className="blog-list">
+          {items.map((b) => (
+            <article key={b.id} className="blog-item">
+              <Link to={`/blogs/${b.id}`} className="blog-item-title">
+                {b.title}
+              </Link>
+              <time className="blog-item-date">
+                {new Date(b.created_at).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}
+              </time>
+              <div className="blog-item-excerpt">
+                {b.content.length > 200 ? b.content.slice(0, 200) + "…" : b.content}
+              </div>
+            </article>
+          ))}
+        </div>
+
+        {items.length === 0 && !busy && (
+          <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
+            <h3>No posts yet</h3>
+            <p className="text-muted">
+              {user ? (
+                <>Be the first to <Link to="/blogs/new">create a post</Link>!</>
+              ) : (
+                <>Login to create the first post.</>
+              )}
+            </p>
+          </div>
+        )}
+
+        {totalPages > 1 && (
+          <div className="pagination">
+            <button disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
+              ← Previous
+            </button>
+            <span className="page-info">
+              Page {page} of {totalPages}
+            </span>
+            <button disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>
+              Next →
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

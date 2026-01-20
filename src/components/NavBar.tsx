@@ -5,23 +5,34 @@ export default function NavBar() {
   const { user, loading } = useAppSelector((s) => s.auth);
 
   return (
-    <div style={{ padding: 16, borderBottom: "1px solid #ddd", display: "flex", gap: 12 }}>
-      <Link to="/blogs">Blogs</Link>
-      {!loading && user && <Link to="/blogs/new">Create</Link>}
-      <div style={{ marginLeft: "auto", display: "flex", gap: 12 }}>
-        {!loading && !user && (
-          <>
-            <Link to="/register">Register</Link>
-            <Link to="/login">Login</Link>
-          </>
-        )}
-        {!loading && user && (
-          <>
-            <span style={{ opacity: 0.7 }}>{user.email}</span>
-            <Link to="/logout">Logout</Link>
-          </>
-        )}
+    <nav className="navbar">
+      <div className="navbar-content">
+        <Link to="/blogs" className="navbar-brand">
+          📝 My Blog
+        </Link>
+        <div className="navbar-links">
+          <Link to="/blogs">Home</Link>
+          {!loading && user && <Link to="/blogs/new">✨ Create Post</Link>}
+        </div>
+        <div className="navbar-end">
+          {!loading && !user && (
+            <>
+              <Link to="/register">Register</Link>
+              <Link to="/login">
+                <button className="btn">Login</button>
+              </Link>
+            </>
+          )}
+          {!loading && user && (
+            <>
+              <span className="user-email">{user.email}</span>
+              <Link to="/logout">
+                <button className="btn btn-secondary">Logout</button>
+              </Link>
+            </>
+          )}
+        </div>
       </div>
-    </div>
+    </nav>
   );
 }

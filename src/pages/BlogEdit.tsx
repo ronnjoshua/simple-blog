@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import { useAppSelector } from "../app/hooks";
 
 type Blog = {
@@ -38,12 +38,19 @@ export default function BlogEdit() {
     e.preventDefault();
     if (!user || !blog) return;
 
+    if (!title.trim()) {
+      return setErr("Title is required");
+    }
+    if (!content.trim()) {
+      return setErr("Content is required");
+    }
+
     setBusy(true);
     setErr(null);
 
     const { error } = await supabase
       .from("blogs")
-      .update({ title, content })
+      .update({ title: title.trim(), content: content.trim() })
       .eq("id", blog.id);
 
     setBusy(false);
@@ -54,6 +61,10 @@ export default function BlogEdit() {
 
   const onDelete = async () => {
     if (!blog) return;
+    
+    const confirmed = window.confirm("Are you sure you want to delete this post? This action cannot be undone.");
+    if (!confirmed) return;
+
     setBusy(true);
     setErr(null);
 
@@ -65,25 +76,82 @@ export default function BlogEdit() {
     nav("/blogs");
   };
 
-  if (err) return <div style={{ padding: 16, color: "crimson" }}>{err}</div>;
-  if (!blog) return <div style={{ padding: 16 }}>Loading...</div>;
+  if (err && !blog) return (
+    <div className="page">
+      <div className="container container-sm">
+        <div className="alert alert-error">{err}</div>
+        <Link to="/blogs">← Back to blogs</Link>
+      </div>
+    </div>
+  );
+
+  if (!blog) return (
+    <div className="page">
+      <div className="container">
+        <div className="loading">Loading...</div>
+      </div>
+    </div>
+  );
 
   const isOwner = !!user && user.id === blog.user_id;
-  if (!isOwner) return <div style={{ padding: 16 }}>Not allowed.</div>;
+  
+  if (!isOwner) return (
+    <div className="page">
+      <div className="container container-sm">
+        <div className="alert alert-error">You don't have permission to edit this post.</div>
+        <Link to={`/blogs/${blog.id}`}>← Back to post</Link>
+      </div>
+    </div>
+  );
 
   return (
-    <div style={{ padding: 16, maxWidth: 720 }}>
-      <h2>Edit Blog</h2>
-      <form onSubmit={onSave} style={{ display: "grid", gap: 12 }}>
-        <input value={title} onChange={(e) => setTitle(e.target.value)} />
-        <textarea rows={10} value={content} onChange={(e) => setContent(e.target.value)} />
-        <div style={{ display: "flex", gap: 12 }}>
-          <button disabled={busy} type="submit">{busy ? "Saving..." : "Save"}</button>
-          <button disabled={busy} type="button" onClick={onDelete} style={{ color: "crimson" }}>
-            Delete
-          </button>
+    <div className="page">
+      <div className="container container-md">
+        <Link to={`/blogs/${blog.id}`} style={{ marginBottom: '1rem', display: 'inline-block' }}>
+          ← Cancel
+        </Link>
+
+        <div className="card">
+          <h2>✏️ Edit Post</h2>
+          
+          <form onSubmit={onSave} className="form">
+            <div className="form-group">
+              <label className="form-label">Title</label>
+              <input 
+                type="text"
+                value={title} 
+                onChange={(e) => setTitle(e.target.value)}
+                autoFocus
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Content</label>
+              <textarea 
+                rows={15} 
+                value={content} 
+                onChange={(e) => setContent(e.target.value)} 
+              />
+            </div>
+
+            <div className="form-actions">
+              <button disabled={busy} type="submit">
+                {busy ? "Saving..." : "💾 Save Changes"}
+              </button>
+              <button 
+                disabled={busy} 
+                type="button" 
+                onClick={onDelete} 
+                className="btn btn-danger"
+              >
+                🗑️ Delete Post
+              </button>
+            </div>
+
+            {err && <div className="alert alert-error">{err}</div>}
+          </form>
         </div>
-      </form>
+      </div>
     </div>
   );
 }

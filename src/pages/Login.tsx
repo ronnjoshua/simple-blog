@@ -23,17 +23,50 @@ export default function Login() {
   };
 
   return (
-    <div style={{ padding: 16, maxWidth: 420 }}>
-      <h2>Login</h2>
-      <form onSubmit={onSubmit} style={{ display: "grid", gap: 12 }}>
-        <input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <input placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        <button disabled={busy} type="submit">{busy ? "Signing in..." : "Login"}</button>
-        {err && <div style={{ color: "crimson" }}>{err}</div>}
-      </form>
-      <p style={{ marginTop: 12 }}>
-        No account yet? <Link to="/register">Register</Link>
-      </p>
+    <div className="page">
+      <div className="container container-sm">
+        <div className="card" style={{ maxWidth: '480px', margin: '0 auto' }}>
+          <h2>👋 Welcome Back</h2>
+          <p className="text-secondary" style={{ marginBottom: '1.5rem' }}>
+            Sign in to your account to continue
+          </p>
+
+          <form onSubmit={onSubmit} className="form">
+            <div className="form-group">
+              <label className="form-label">Email</label>
+              <input 
+                type="email"
+                placeholder="your@email.com" 
+                value={email} 
+                onChange={(e) => setEmail(e.target.value)}
+                autoFocus
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Password</label>
+              <input 
+                type="password"
+                placeholder="Enter your password" 
+                value={password} 
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+
+            <button disabled={busy} type="submit" style={{ width: '100%' }}>
+              {busy ? "Signing in..." : "🔐 Sign In"}
+            </button>
+
+            {err && <div className="alert alert-error">{err}</div>}
+          </form>
+
+          <p style={{ marginTop: '1.5rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
+            Don't have an account? <Link to="/register">Create one</Link>
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

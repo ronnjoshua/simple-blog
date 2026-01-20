@@ -28,26 +28,67 @@ export default function BlogView() {
     })();
   }, [id]);
 
-  if (err) return <div style={{ padding: 16, color: "crimson" }}>{err}</div>;
-  if (!blog) return <div style={{ padding: 16 }}>Loading...</div>;
+  if (err) return (
+    <div className="page">
+      <div className="container container-sm">
+        <div className="alert alert-error">{err}</div>
+        <Link to="/blogs">← Back to blogs</Link>
+      </div>
+    </div>
+  );
+
+  if (!blog) return (
+    <div className="page">
+      <div className="container">
+        <div className="loading">Loading post...</div>
+      </div>
+    </div>
+  );
 
   const isOwner = !!user && user.id === blog.user_id;
 
   return (
-    <div style={{ padding: 16 }}>
-      <h2>{blog.title}</h2>
-      <div style={{ opacity: 0.7 }}>
-        Created: {new Date(blog.created_at).toLocaleString()} | Updated: {new Date(blog.updated_at).toLocaleString()}
-      </div>
+    <div className="page">
+      <div className="container container-md">
+        <Link to="/blogs" style={{ marginBottom: '1rem', display: 'inline-block' }}>
+          ← Back to all posts
+        </Link>
+        
+        <article>
+          <div className="blog-header">
+            <h1>{blog.title}</h1>
+            <div className="blog-meta">
+              <div>
+                📅 Published {new Date(blog.created_at).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}
+              </div>
+              {blog.created_at !== blog.updated_at && (
+                <div className="text-muted">
+                  Last updated {new Date(blog.updated_at).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </div>
+              )}
+            </div>
 
-      {isOwner && (
-        <div style={{ marginTop: 12, display: "flex", gap: 12 }}>
-          <Link to={`/blogs/${blog.id}/edit`}>Edit</Link>
-        </div>
-      )}
+            {isOwner && (
+              <div className="blog-actions">
+                <Link to={`/blogs/${blog.id}/edit`}>
+                  <button className="btn">✏️ Edit Post</button>
+                </Link>
+              </div>
+            )}
+          </div>
 
-      <div style={{ marginTop: 16, whiteSpace: "pre-wrap", lineHeight: 1.6 }}>
-        {blog.content}
+          <div className="blog-content">
+            {blog.content}
+          </div>
+        </article>
       </div>
     </div>
   );
