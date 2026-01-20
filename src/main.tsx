@@ -5,6 +5,7 @@ import { store } from "./app/store";
 import { supabase } from "./lib/supabase";
 import { setAuth, setLoading } from "./features/auth/authSlice";
 import App from "./App";
+import "./index.css";
 
 store.dispatch(setLoading(true));
 
